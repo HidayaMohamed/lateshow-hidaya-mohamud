@@ -1,3 +1,4 @@
+// GuestsList component shows a list of all guests
 function GuestsList({ guests }) {
   return (
     <div>

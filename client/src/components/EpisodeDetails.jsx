@@ -1,4 +1,8 @@
+import React from "react";
+
+// EpisodeDetails component displays details of a selected episode
 function EpisodeDetails({ episode }) {
+  // if no episode is selected, render null
   if (!episode) return null;
 
   return (

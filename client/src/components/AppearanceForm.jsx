@@ -57,7 +57,7 @@ function AppearanceForm({ episodes, guests, onSuccess }) {
 
       <form onSubmit={handleSubmit}>
         <input
-          style={{ width: "100px", height: "30px" }}
+          style={{ width: "100px", height: "30px", background: "#151e3d" }}
           placeholder="Rating (1-5)"
           value={rating}
           onChange={(e) => setRating(e.target.value)}
@@ -65,7 +65,7 @@ function AppearanceForm({ episodes, guests, onSuccess }) {
 
         <select
           onChange={(e) => setEpisodeId(e.target.value)}
-          style={{ width: "150px", height: "35px" }}
+          style={{ width: "150px", height: "35px", background: "#151e3d" }}
         >
           <option value="">Select Episode</option>
           {episodes.map((ep) => (
@@ -77,7 +77,7 @@ function AppearanceForm({ episodes, guests, onSuccess }) {
 
         <select
           onChange={(e) => setGuestId(e.target.value)}
-          style={{ width: "150px", height: "35px" }}
+          style={{ width: "150px", height: "35px", background: "#151e3d" }}
         >
           <option value="">Select Guest</option>
           {guests.map((g) => (
