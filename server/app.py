@@ -21,3 +21,28 @@ def get_episodes():
         for episode in episodes
     ]), 200
 
+# GET /episodes/<int:id> -> GET episodes by id
+@app.route("/episodes/<int:id>", methods=["GET"])
+def get_episode_by_id(id):
+    episode = Episode.query.get(id)
+
+    if not episode:
+        return jsonify({"error": "Episode not found"}), 404
+
+    # Includes appearances
+    # Each appearance includes nested guest
+    return jsonify(
+        episode.to_dict(
+            include={"appearances": {"include": {"guest"}}}
+        )
+    ), 200
+
+
+# GET /guests
+@app.route("/guests", methods=["GET"])
+def get_guests():
+    guests = Guest.query.all()
+    return jsonify([
+        guest.to_dict(only=("id", "name", "occupation"))
+        for guest in guests
+    ]), 200
