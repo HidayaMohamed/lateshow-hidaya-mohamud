@@ -2,8 +2,14 @@
 from flask import Flask, request, jsonify
 from flask_migrate import Migrate
 from models import db, Episode, Guest, Appearance
+from flask_cors import CORS
+
+
+
 # App instance
 app = Flask(__name__)
+
+CORS(app)
 # Configured the database and stop tracking notification
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -48,7 +54,7 @@ def get_guests():
     ]), 200
 
 # POST /appearances
-app.route("/appearances", methods=["POST"])
+@app.route("/appearances", methods=["POST"])
 def create_appearance():
     data = request.get_json()
 
