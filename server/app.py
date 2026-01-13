@@ -11,3 +11,13 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
 migrate = Migrate(app, db)
+
+# GET /episodes
+@app.route("/episodes", methods=["GET"])
+def get_episodes():
+    episodes = Episode.query.all()
+    return jsonify([
+        episode.to_dict(only=("id", "date", "number"))
+        for episode in episodes
+    ]), 200
+
