@@ -32,7 +32,7 @@ class Episode(db.Model, SerializerMixin):
 class Guest(db.Model, SerializerMixin):
     __tablename__ = "guests"
 
-    # Serialization
+    # Serialization to prevent recursion 
     serialize_rules = ("-appearances.guest","-episodes.appearances")
 
     # Columns
