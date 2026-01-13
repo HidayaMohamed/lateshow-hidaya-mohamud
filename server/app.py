@@ -31,18 +31,26 @@ def get_episodes():
 @app.route("/episodes/<int:id>", methods=["GET"])
 def get_episode_by_id(id):
     episode = Episode.query.get(id)
-
     if not episode:
         return jsonify({"error": "Episode not found"}), 404
 
-    # Includes appearances
-    # Each appearance includes nested guest
-    return jsonify(
-        episode.to_dict(
-            include={"appearances": {"include": {"guest"}}}
-        )
-    ), 200
-
+    # Safely serialize appearances and their guests
+    return jsonify({
+        "id": episode.id,
+        "date": episode.date,
+        "number": episode.number,
+        "appearances": [
+            {
+                "id": app.id,
+                "rating": app.rating,
+                "guest": {
+                    "id": app.guest.id,
+                    "name": app.guest.name,
+                    "occupation": app.guest.occupation
+                }
+            } for app in episode.appearances
+        ]
+    }), 200
 
 # GET /guests
 @app.route("/guests", methods=["GET"])
@@ -58,21 +66,47 @@ def get_guests():
 def create_appearance():
     data = request.get_json()
 
+    if not data:
+        return jsonify({"errors": ["No JSON data received"]}), 400
+
+    required_keys = ["rating", "episode_id", "guest_id"]
+    for key in required_keys:
+        if key not in data:
+            return jsonify({"errors": [f"Missing field: {key}"]}), 400
+
     try:
         appearance = Appearance(
-            rating=data["rating"],
-            episode_id=data["episode_id"],
-            guest_id=data["guest_id"]
+            rating=int(data["rating"]),
+            episode_id=int(data["episode_id"]),
+            guest_id=int(data["guest_id"])
         )
 
         db.session.add(appearance)
         db.session.commit()
 
-        return jsonify(
-            appearance.to_dict(
-                include=("episode", "guest")
-            )
-        ), 201
+        # Return the episode with appearances updated
+        episode = Episode.query.get(appearance.episode_id)
+        return jsonify({
+            "id": episode.id,
+            "date": episode.date,
+            "number": episode.number,
+            "appearances": [
+                {
+                    "id": app.id,
+                    "rating": app.rating,
+                    "guest": {
+                        "id": app.guest.id,
+                        "name": app.guest.name,
+                        "occupation": app.guest.occupation
+                    }
+                } for app in episode.appearances
+            ]
+        }), 201
+
+    except ValueError as ve:
+        db.session.rollback()
+        return jsonify({"errors": [str(ve)]}), 422
+
     except Exception as e:
         db.session.rollback()
-        return jsonify({"errors": ["validation errors"]}), 422
+        return jsonify({"errors": [str(e)]}), 500

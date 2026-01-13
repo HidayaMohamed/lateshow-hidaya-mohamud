@@ -8,8 +8,8 @@ db = SQLAlchemy()
 class Episode(db.Model, SerializerMixin):
     __tablename__ = "episodes"
 
-    # Serialization
-    serialize_rules = ("-appearances.episode",)
+    # Serialization to prevent recursion 
+    serialize_rules = ("-appearances.episode","-guests.appearances")
 
     # Columns
     id = db.Column(db.Integer, primary_key=True)
@@ -33,7 +33,7 @@ class Guest(db.Model, SerializerMixin):
     __tablename__ = "guests"
 
     # Serialization
-    erialize_rules = ("-appearances.guest",)
+    serialize_rules = ("-appearances.guest","-episodes.appearances")
 
     # Columns
     id = db.Column(db.Integer, primary_key=True)
